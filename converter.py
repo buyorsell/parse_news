@@ -5,7 +5,7 @@ import db_setup
 import ner_handler
 
 
-def convert_commersant(path):
+def import_commersant(path):
 
 	for file in os.listdir(path):
 
@@ -17,7 +17,7 @@ def convert_commersant(path):
 
 				data = ner_handler.process_news(data)
 
-				db_setup.Commersant(
+				cs = db_setup.Commersant(
 
 					datetime=data['datetime'],
 					rubric=data['rubric'],
@@ -26,26 +26,12 @@ def convert_commersant(path):
 					title=data['header'],
 					text=data['header'],
 
-					locs= Column('locs', ARRAY(TEXT)),
-					pers=Column('pers', ARRAY(TEXT)),
-					orgs=Column('orgs', ARRAY(TEXT))
-
+					locs=data['locs'],
+					pers=data['pers'],
+					orgs=data['orgs']
 
 				)
 
+				db_setup.session.add(cs)
 
-
-				ins = meduza_db.insert().values(
-
-					title=data['header'],
-					text=data['text'],
-
-					date=convert_meduza_date(data['datetime']),
-
-					link=''
-				)
-
-				conn.execute(ins)
-
-
-convert_meduza()
+	db_setup.session.commit()

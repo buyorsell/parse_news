@@ -1,3 +1,5 @@
+import os
+
 from sqlalchemy import (
 	create_engine,
 
@@ -15,8 +17,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 
 
-# dialect://username:password@host:port/database
-engine = create_engine('postgresql://postgres:iQLKz7Go@localhost:5432/postgres')
+engine = create_engine(os.environ.get('PostgresDB'))
 
 base = declarative_base()
 
