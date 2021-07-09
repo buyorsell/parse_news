@@ -21,7 +21,7 @@ class Meduza(Base):
     __tablename__ = 'meduza'
     id = Column(Integer, primary_key=True)
     datetime = Column(DateTime)
-    source = Column(DateTime)
+    source = Column(String)
     link = Column(String, unique=True)
     title = Column(String)
     text = Column(String)
