@@ -107,11 +107,11 @@ def crawl_commersant(url_to_start):
                 news = driver.find_elements_by_class_name("archive_result")
                 for item in news:
                     news_type = item.find_element_by_class_name("archive_result__tag").find_element_by_tag_name("a").text
-                    logging.info(link)
                     if news_type.lower() != "лента новостей":
                         logging.info("Skipping.....")
                         continue
                     link = item.find_element_by_class_name("archive_result__item_text").find_element_by_tag_name("a").get_attribute("href")
+                    logging.info(link)
                     if link not in links:
                         links.append(link)                        
                         try:
