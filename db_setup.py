@@ -7,6 +7,7 @@ from sqlalchemy import (
     String,
     ARRAY,
     DateTime,
+    REAL,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -41,6 +42,9 @@ class Kommersant(Base):
     locs = Column(ARRAY(String))
     pers = Column(ARRAY(String))
     orgs = Column(ARRAY(String))
+    x = Column(REAL)
+    y = Column(REAL)
+    highlights = Column(String)
 
 Base.metadata.bind = engine
 Base.metadata.create_all(engine)
