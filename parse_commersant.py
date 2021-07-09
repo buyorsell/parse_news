@@ -1,6 +1,8 @@
 import requests
 import os
-from tqdm.notebook import tqdm
+import logging
+from ner_handler import process_news
+#from tqdm.notebook import tqdm
 import json
 import datetime
 from selenium import webdriver
@@ -8,20 +10,20 @@ from selenium.webdriver import FirefoxOptions
 from selenium.webdriver.common.action_chains import ActionChains
 from bs4 import BeautifulSoup
 from selenium.common.exceptions import NoSuchElementException
+from db_setup import Kommersant, session
+from sqlalchemy.exc import IntegrityError
 
-url_to_start = "https://www.kommersant.ru/archive/rubric/3/day/2019-08-05"
-
+#url_to_start = "https://www.kommersant.ru/archive/rubric/4"
 
 def parse_commersant(url_to_parse):
     html_page = requests.get(url_to_parse)
     soup = BeautifulSoup(html_page.content, 'html.parser')
 
     news_body = soup.find("div", class_="lenta js-lenta").find("article")
-
+    
     author = news_body.get("data-article-authors")
-
-    header = news_body.find("header").find(
-        "div", class_="text").find("h1").text
+    
+    header = news_body.find("header").find("div", class_="text").find("h1").text
 
     try:
         subheader = news_body.find("header").find("div", class_="text").find(
@@ -33,19 +35,19 @@ def parse_commersant(url_to_parse):
 
     body = news_body.find(
         "div", class_="article_text_wrapper").find_all("p", class_="b-article__text")
-
+    
     text = ""
     for item in body:
         text += item.text + "\n"
-
-    datetime = soup.find("time", class_="title__cake").get("datetime")
-
+    
+    time = soup.find("time", class_="title__cake").get("datetime")
+    
     source = "commersant"
     response = {
-        "header": header,
+        "title": header,
         "text": text,
         "rubric": rubric,
-        "datetime": datetime,
+        "datetime": time,
         "subheader": subheader,
         "tags": [],
         "source": source,
@@ -61,9 +63,30 @@ def dump_into_json(site, data):
         json.dump(data, file, ensure_ascii=False)
 
 
+def dump_into_postgresql(data):
+    for item_raw in data:
+        item = process_news(item_raw)
+        new_entry = Kommersant(
+            datetime = item["datetime"],
+            rubric = item["rubric"],
+            title = item["title"],
+            text = item["text"],
+            link = item["link"],
+            locs = item["locs"],
+            pers = item["pers"],
+            orgs = item["orgs"],
+        )
+        try:
+            session.add(new_entry())
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            continue
+
+
 def crawl_commersant(url_to_start):
-    start = datetime.datetime.strptime("05-08-2019", "%d-%m-%Y")
-    end = datetime.datetime.strptime("04-03-2011", "%d-%m-%Y")
+#    start = datetime.datetime.strptime("09-07-2021", "%d-%m-%Y")
+#    end = datetime.datetime.strptime("04-03-2011", "%d-%m-%Y")
     links = []
     opts = FirefoxOptions()
     opts.add_argument('--headless')
@@ -71,34 +94,37 @@ def crawl_commersant(url_to_start):
     actions = ActionChains(driver)
     print("check")
     driver.get(url_to_start)
-    for item in tqdm(range(0, (start-end).days)):
-        print("start")
+#    for item in tqdm(range(0, (start-end).days)):
+    while True:
+#        print("start")
         try:
             while True:
                 data = []
                 news = driver.find_elements_by_class_name("archive_result")
                 for item in news:
-                    news_type = item.find_element_by_class_name(
-                        "archive_result__tag").find_element_by_tag_name("a").text
+                    news_type = item.find_element_by_class_name("archive_result__tag").find_element_by_tag_name("a").text
                     if news_type.lower() != "лента новостей":
                         print("skipping")
                         continue
-                    link = item.find_element_by_class_name(
-                        "archive_result__item_text").find_element_by_tag_name("a").get_attribute("href")
+                    link = item.find_element_by_class_name("archive_result__item_text").find_element_by_tag_name("a").get_attribute("href")
                     print(link)
                     if link not in links:
-                        links.append(link)
-                        content = parse_commersant(link)
-                        data.append(content)
-                dump_into_json("commersant", data)
+                        links.append(link)                        
+                        try:
+                            content = parse_commersant(link)
+                            content["link"] = link
+                            data.append(content)
+                        except:
+                            print("404, i suppose")
+                            continue
+                dump_into_postgresql(data)
+#                dump_into_json("commersant", data)
                 resume = driver.find_element_by_class_name(
                     "ui_button ui_button--load_content lazyload-button")
                 actions.move_to_element(resume).perform()
                 resume.click()
         except NoSuchElementException:
-            change_page = driver.find_element_by_class_name(
-                "archive_date__arrow--prev")
+            change_page = driver.find_element_by_class_name("archive_date__arrow--prev")
             driver.get(change_page.get_attribute("href"))
-
-
-crawl_commersant(url_to_start)
+        
+#crawl_commersant(url_to_start)

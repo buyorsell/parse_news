@@ -5,7 +5,7 @@ import db_setup
 import ner_handler
 
 
-def import_commersant(path):
+def process_commersant(path):
 
 	for file in os.listdir(path):
 
