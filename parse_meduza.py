@@ -1,6 +1,8 @@
 import requests
 import os
 import logging
+import time
+import random
 import json
 from selenium import webdriver
 from selenium.webdriver import FirefoxOptions
@@ -26,6 +28,7 @@ def replace_month(x):
 
 
 def parse_meduza(url_to_parse):
+    time.sleep(random.random()+0.1)
     html_page = requests.get(url_to_parse)
 
     soup = BeautifulSoup(html_page.content, 'html.parser')
