@@ -25,9 +25,9 @@ class Meduza(base):
     link = Column(String, unique=True)
     title = Column(String)
     text = Column(String)
-    locs = Column('locs', ARRAY(String))
-    pers = Column('pers', ARRAY(String))
-    orgs = Column('orgs', ARRAY(String))
+    locs = Column(ARRAY(String))
+    pers = Column(ARRAY(String))
+    orgs = Column(ARRAY(String))
 
 
 class Commersant(base):
@@ -38,9 +38,9 @@ class Commersant(base):
     link = Column(String, unique=True)
     title = Column(String)
     text = Column(String)
-    locs = Column('locs', ARRAY(String))
-    pers = Column('pers', ARRAY(String))
-    orgs = Column('orgs', ARRAY(String))
+    locs = Column(ARRAY(String))
+    pers = Column(ARRAY(String))
+    orgs = Column(ARRAY(String))
 
 
 base.metadata.create_all(engine)
