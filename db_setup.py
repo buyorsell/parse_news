@@ -1,18 +1,13 @@
 import os
 
 from sqlalchemy import (
-	create_engine,
-
-	Column,
-
-	INTEGER,
-	TEXT,
-	ARRAY,
-	DATE,
-
-	UniqueConstraint
+    create_engine,
+    Column,
+    Integer,
+    String,
+    ARRAY,
+    DateTime,
 )
-
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 
@@ -23,47 +18,29 @@ base = declarative_base()
 
 
 class Meduza(base):
-
-	__tablename__ = 'meduza'
-
-	id = Column(INTEGER(), primary_key=True)
-
-	datetime = Column(DATE())
-	source = Column(TEXT())
-	link = Column(TEXT())
-
-	title = Column(TEXT())
-	text = Column(TEXT())
-
-	locs = Column('locs', ARRAY(TEXT))
-	pers = Column('pers', ARRAY(TEXT))
-	orgs = Column('orgs', ARRAY(TEXT))
-
-	__table_args__ = (
-		UniqueConstraint('link'),
-	)
+    __tablename__ = 'meduza'
+    id = Column(Integer, primary_key=True)
+    datetime = Column(DateTime)
+    source = Column(DateTime)
+    link = Column(String, unique=True)
+    title = Column(String)
+    text = Column(String)
+    locs = Column('locs', ARRAY(String))
+    pers = Column('pers', ARRAY(String))
+    orgs = Column('orgs', ARRAY(String))
 
 
 class Commersant(base):
-
-	__tablename__ = 'commersant'
-
-	id = Column(INTEGER(), primary_key=True)
-
-	datetime = Column(DATE())
-	rubric = Column(TEXT())
-	link = Column(TEXT())
-
-	title = Column(TEXT())
-	text = Column(TEXT())
-
-	locs = Column('locs', ARRAY(TEXT))
-	pers = Column('pers', ARRAY(TEXT))
-	orgs = Column('orgs', ARRAY(TEXT))
-
-	__table_args__ = (
-		UniqueConstraint('link'),
-	)
+    __tablename__ = 'commersant'
+    id = Column(Integer, primary_key=True)
+    datetime = Column(DateTime)
+    rubric = Column(String)
+    link = Column(String, unique=True)
+    title = Column(String)
+    text = Column(String)
+    locs = Column('locs', ARRAY(String))
+    pers = Column('pers', ARRAY(String))
+    orgs = Column('orgs', ARRAY(String))
 
 
 base.metadata.create_all(engine)
