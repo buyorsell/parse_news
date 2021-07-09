@@ -34,7 +34,7 @@ class Kommersant(Base):
     __tablename__ = 'commersant'
     id = Column(Integer, primary_key=True)
     datetime = Column(DateTime)
-    rubric = Column(String)
+    rubric = Column(ARRAY(String))
     link = Column(String, unique=True)
     title = Column(String)
     text = Column(String)

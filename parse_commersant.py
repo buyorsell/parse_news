@@ -13,6 +13,10 @@ from selenium.common.exceptions import NoSuchElementException
 from db_setup import Kommersant, session
 from sqlalchemy.exc import IntegrityError
 
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
+logging.basicConfig(filename='commersant_parser.log', level=logging.INFO)
+
 #url_to_start = "https://www.kommersant.ru/archive/rubric/4"
 
 def parse_commersant(url_to_parse):
@@ -46,7 +50,7 @@ def parse_commersant(url_to_parse):
     response = {
         "title": header,
         "text": text,
-        "rubric": rubric,
+        "rubric": list(rubric.split(",")),
         "datetime": time,
         "subheader": subheader,
         "tags": [],
@@ -77,7 +81,7 @@ def dump_into_postgresql(data):
             orgs = item["orgs"],
         )
         try:
-            session.add(new_entry())
+            session.add(new_entry)
             session.commit()
         except IntegrityError:
             session.rollback()
@@ -92,7 +96,7 @@ def crawl_commersant(url_to_start):
     opts.add_argument('--headless')
     driver = webdriver.Firefox(options=opts)
     actions = ActionChains(driver)
-    print("check")
+    logging.info("Starting crawler....")
     driver.get(url_to_start)
 #    for item in tqdm(range(0, (start-end).days)):
     while True:
@@ -103,11 +107,11 @@ def crawl_commersant(url_to_start):
                 news = driver.find_elements_by_class_name("archive_result")
                 for item in news:
                     news_type = item.find_element_by_class_name("archive_result__tag").find_element_by_tag_name("a").text
+                    logging.info(link)
                     if news_type.lower() != "лента новостей":
-                        print("skipping")
+                        logging.info("Skipping.....")
                         continue
                     link = item.find_element_by_class_name("archive_result__item_text").find_element_by_tag_name("a").get_attribute("href")
-                    print(link)
                     if link not in links:
                         links.append(link)                        
                         try:
@@ -115,8 +119,9 @@ def crawl_commersant(url_to_start):
                             content["link"] = link
                             data.append(content)
                         except:
-                            print("404, i suppose")
+                            logging.error("Error in parser")
                             continue
+                logging.info("Dumping into PSQL")
                 dump_into_postgresql(data)
 #                dump_into_json("commersant", data)
                 resume = driver.find_element_by_class_name(
@@ -124,7 +129,9 @@ def crawl_commersant(url_to_start):
                 actions.move_to_element(resume).perform()
                 resume.click()
         except NoSuchElementException:
+            logging.info("Changing date")
             change_page = driver.find_element_by_class_name("archive_date__arrow--prev")
             driver.get(change_page.get_attribute("href"))
+    logging.error("Crashed")
         
 #crawl_commersant(url_to_start)
