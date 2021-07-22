@@ -12,10 +12,10 @@ from sqlalchemy import (
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import relationship
+import os
 
 
-engine = create_engine(
-    "postgresql://postgres:Misha_Yarikoff_Loves_You@146.185.208.198:5432/news")
+engine = create_engine(os.environ.get('PSQL_DB'))
 
 Base = declarative_base()
 

@@ -15,10 +15,7 @@ from sqlalchemy.exc import IntegrityError
 
 for handler in logging.root.handlers[:]:
     logging.root.removeHandler(handler)
-logging.basicConfig(filename='commersant_parser.log', level=logging.INFO)
-
-url_to_start = "https://www.kommersant.ru/archive/rubric/4"
-
+logging.basicConfig(filename='parser.log', level=logging.INFO)
 
 def parse_commersant(url_to_parse):
     html_page = requests.get(url_to_parse)
@@ -100,10 +97,8 @@ def crawl_commersant(url_to_start):
     actions = ActionChains(driver)
     logging.info("Starting crawler....")
     driver.get(url_to_start)
-#    for item in tqdm(range(0, (start-end).days)):
     running = True
     while running:
-        #        print("start")
         try:
             while running:
                 data = []
@@ -129,7 +124,9 @@ def crawl_commersant(url_to_start):
                     else:
                         logging.info("Completed parsing")
                         running = False
-                        break
+                        return {"status": "ok"}
+                if not running:
+                    return {"status": "ok"}
                 logging.info("Dumping into PSQL")
                 dump_into_postgresql(data)
 #                dump_into_json("commersant", data)
@@ -138,11 +135,18 @@ def crawl_commersant(url_to_start):
                 actions.move_to_element(resume).perform()
                 resume.click()
         except NoSuchElementException:
+            if not running:
+                return {"status": "ok"}
             logging.info("Changing date")
             change_page = driver.find_element_by_class_name(
                 "archive_date__arrow--prev")
             driver.get(change_page.get_attribute("href"))
+        finally:
+            if not running:
+                return {"status": "ok"}
+        if not running:
+            return {"status": "ok"}
     logging.error("Completed")
 
 
-crawl_commersant(url_to_start)
+#crawl_commersant(url_to_start)
