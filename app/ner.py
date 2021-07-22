@@ -11,7 +11,7 @@ from natasha import (
 
 	Doc
 )
-
+import pandas as pd
 
 segmenter = Segmenter()
 morph_vocab = MorphVocab()
