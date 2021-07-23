@@ -5,6 +5,7 @@ from app.ner import process_news
 from app.db_setup import AllNews, session
 #from tqdm.notebook import tqdm
 import json
+from app.ml import modify_item
 import datetime
 from selenium import webdriver
 from selenium.webdriver import FirefoxOptions
@@ -79,8 +80,9 @@ def dump_into_postgresql(data):
             pers=item["pers"],
             orgs=item["orgs"],
         )
+        processed_entry = modify_item(new_entry)
         try:
-            session.add(new_entry)
+            session.add(processed_entry)
             session.commit()
         except IntegrityError:
             session.rollback()
