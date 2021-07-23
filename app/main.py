@@ -1,5 +1,5 @@
 import fastapi
-from parser import crawl_commersant
+from app.parser import crawl_commersant
 
 app = fastapi.FastAPI()
 
