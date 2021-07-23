@@ -12,7 +12,7 @@ from sqlalchemy.exc import IntegrityError
 
 for handler in logging.root.handlers[:]:
     logging.root.removeHandler(handler)
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
 
 def parse_commersant(url_to_parse):
     html_page = requests.get(url_to_parse)
@@ -89,7 +89,7 @@ def crawl_commersant(url_to_start):
     #    start = datetime.datetime.strptime("09-07-2021", "%d-%m-%Y")
     #    end = datetime.datetime.strptime("04-03-2011", "%d-%m-%Y")
     links = session.query(AllNews.link).all()
-    logging.info("Starting crawler....")
+    logging.warning("Starting crawler....")
     html_page = requests.get(url_to_start)
     running = True
     while running:
@@ -104,21 +104,21 @@ def crawl_commersant(url_to_start):
             link = "https://www.kommersant.ru" + \
                 item.find("div", class_="archive_result__item_text").find(
                     "a").get("href")
-            logging.info(link)
+            logging.warning(link)
             if link not in links:
                 links.append(link)
                 content = parse_commersant(link)
                 content["link"] = link
                 data.append(content)
             else:
-                logging.info("Completed parsing")
+                logging.warning("Completed parsing")
                 running = False
                 return {"status": "ok"}
         if not running:
             return {"status": "ok"}
-        logging.info("Dumping into PSQL")
+        logging.warning("Dumping into PSQL")
         dump_into_postgresql(data)
-    logging.info("Changing date")
+    logging.warning("Changing date")
     change_page = soup.find("a", "archive_date__arrow--prev")
     html_page = requests.get(change_page.get("href"))
     logging.error("Completed")
