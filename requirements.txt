@@ -31,6 +31,7 @@ pydantic==1.8.2
 pymorphy2==0.9.1
 pymorphy2-dicts-ru==2.4.417127.4579844
 python-dateutil==2.8.2
+python-Levenshtein==0.12.2
 pythran==0.9.12.post1
 pytz==2021.1
 razdel==0.5.0
