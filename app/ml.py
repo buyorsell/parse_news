@@ -13,7 +13,7 @@ import warnings
 from gensim.models import KeyedVectors
 
 with warnings.catch_warnings():
-    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    warnings.filterwarnings("ignore", category=UserWarning)
     from sklearn.metrics.pairwise import cosine_similarity
 
 file_location = os.environ.get('FILE_LOC')
