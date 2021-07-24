@@ -33,7 +33,7 @@ def makecloud(item: AllNews):
     mask = 255 * mask.astype(int)
 
     words = PrepareNew().newstext2token(item.text)
-    text = ''.join(words)
+    text = ' '.join(words)
 
     # Generate a word cloud image
     wc = WordCloud(background_color="white", max_words=200,
