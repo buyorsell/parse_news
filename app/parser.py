@@ -125,7 +125,7 @@ def crawl_commersant(url_to_start):
             dump_into_postgresql(data)
         logging.warning("Changing date")
         change_page = soup.find("a", "archive_date__arrow--prev")
-        html_page = requests.get(change_page.get("href"))
+        html_page = requests.get("https://www.kommersant.ru" + change_page.get("href"))
         logging.error("Completed")
 
 
