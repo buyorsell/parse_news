@@ -13,8 +13,7 @@ class PrepareNew():
   def __init__(self):
     self.morph = pymorphy2.MorphAnalyzer()
     self.tokenizer = nltk.WordPunctTokenizer()
-    self.stopwords = set(line.strip() for line in codecs.open(
-        'rus_stopwords.txt', "r", "utf_8_sig").readlines())
+    self.stopwords = set(line.strip() for line in codecs.open(os.environ.get('FILE_LOC') + 'rus_stopwords.txt', "r", "utf_8_sig").readlines())
 
   def prepare_corp(self, news_list: List[str]):
     return [self.newstext2token(news_text) for news_text in news_list]
