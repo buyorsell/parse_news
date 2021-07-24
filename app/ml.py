@@ -9,11 +9,12 @@ from app.db_setup import AllNews, Recommendation
 from gensim.models import LdaMulticore
 from gensim.corpora.dictionary import Dictionary
 import json
-from sklearn.metrics.pairwise import cosine_similarity
-from gensim.models import KeyedVectors
 import warnings
+from gensim.models import KeyedVectors
 
-warnings.filterwarnings("ignore", category=DeprecationWarning)
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    from sklearn.metrics.pairwise import cosine_similarity
 
 file_location = os.environ.get('FILE_LOC')
 
