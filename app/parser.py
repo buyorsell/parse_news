@@ -98,6 +98,8 @@ def crawl_commersant(url_to_start):
         soup = BeautifulSoup(html_page.content, 'html.parser')
         data = []
         news = soup.find_all("article", class_="archive_result")
+        if len(news) == 0:
+            return {"status": "ok"}
         for item in news:
             news_type = item.find( "p", class_="archive_result__tag").find("a").text
             if "лентановостей" not in news_type.lower().replace("\n", "").replace(" ", ""):
