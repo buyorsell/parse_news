@@ -78,13 +78,15 @@ def dump_into_postgresql(data):
             orgs=item["orgs"],
         )
         processed_entry = modify_item(new_entry)
-        makecloud(processed_entry)
         try:
             session.add(processed_entry)
             session.commit()
+            entry = session.query(AllNews).filter(AllNews.link == item["link"]).one()
+            makecloud(entry)
         except IntegrityError:
             session.rollback()
             continue
+
 
 
 def crawl_commersant(url_to_start):
@@ -114,6 +116,10 @@ def crawl_commersant(url_to_start):
                 content["link"] = link
                 data.append(content)
             else:
+                if len(data) != 0:
+                    assert len(data) > 0
+                    logging.warning("Dumping into PSQL")
+                    dump_into_postgresql(data)
                 logging.warning("Completed parsing")
                 running = False
                 return {"status": "ok"}

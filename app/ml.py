@@ -11,6 +11,9 @@ from gensim.corpora.dictionary import Dictionary
 import json
 from sklearn.metrics.pairwise import cosine_similarity
 from gensim.models import KeyedVectors
+import warnings
+
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 file_location = os.environ.get('FILE_LOC')
 
