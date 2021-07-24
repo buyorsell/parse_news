@@ -6,6 +6,7 @@ bs4==0.0.1
 certifi==2021.5.30
 charset-normalizer==2.0.3
 click==8.0.1
+cycler==0.10.0
 Cython==0.29.24
 DAWG-Python==0.7.2
 docopt==0.6.2
@@ -18,11 +19,14 @@ idna==3.2
 intervaltree==3.1.0
 ipymarkup==0.9.0
 joblib==1.0.1
+kiwisolver==1.3.1
+matplotlib==3.4.2
 natasha==1.4.0
 navec==0.10.0
 nltk==3.6.2
 numpy==1.21.1
 pandas==1.3.0
+Pillow==8.3.1
 ply==3.11
 psycopg2-binary==2.9.1
 pybind11==2.7.0
@@ -30,6 +34,7 @@ pycodestyle==2.7.0
 pydantic==1.8.2
 pymorphy2==0.9.1
 pymorphy2-dicts-ru==2.4.417127.4579844
+pyparsing==2.4.7
 python-dateutil==2.8.2
 python-Levenshtein==0.12.2
 pythran==0.9.12.post1
@@ -53,4 +58,5 @@ tqdm==4.61.2
 typing-extensions==3.10.0.0
 urllib3==1.26.6
 uvicorn==0.14.0
+wordcloud==1.8.1
 yargy==0.15.0

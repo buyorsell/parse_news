@@ -3,6 +3,7 @@ import os, sys
 import logging
 from app.ner import process_news
 from app.db_setup import AllNews, session
+from app.wordcloud import makecloud
 #from tqdm.notebook import tqdm
 import json
 from app.ml import modify_item
@@ -77,6 +78,7 @@ def dump_into_postgresql(data):
             orgs=item["orgs"],
         )
         processed_entry = modify_item(new_entry)
+        makecloud(processed_entry)
         try:
             session.add(processed_entry)
             session.commit()
