@@ -1,6 +1,6 @@
 from wordcloud import WordCloud
 import numpy as np
-from db_setup import AllNews
+from app.db_setup import AllNews
 import os
 from typing import List
 import nltk
