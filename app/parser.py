@@ -98,8 +98,7 @@ def crawl_commersant(url_to_start):
         soup = BeautifulSoup(html_page.content, 'html.parser')
         data = []
         news = soup.find_all("article", class_="archive_result")
-        if len(news) == 0:
-            return {"status": "ok"}
+        assert len(news) > 0
         for item in news:
             news_type = item.find( "p", class_="archive_result__tag").find("a").text
             if "лентановостей" not in news_type.lower().replace("\n", "").replace(" ", ""):
@@ -120,13 +119,14 @@ def crawl_commersant(url_to_start):
                 return {"status": "ok"}
         if not running:
             return {"status": "ok"}
-        assert len(data) > 0
-        logging.warning("Dumping into PSQL")
-        dump_into_postgresql(data)
-    logging.warning("Changing date")
-    change_page = soup.find("a", "archive_date__arrow--prev")
-    html_page = requests.get(change_page.get("href"))
-    logging.error("Completed")
+        if len(data) != 0:
+            assert len(data) > 0
+            logging.warning("Dumping into PSQL")
+            dump_into_postgresql(data)
+        logging.warning("Changing date")
+        change_page = soup.find("a", "archive_date__arrow--prev")
+        html_page = requests.get(change_page.get("href"))
+        logging.error("Completed")
 
 
 #crawl_commersant(url_to_start)
