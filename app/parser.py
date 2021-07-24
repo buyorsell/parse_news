@@ -120,6 +120,7 @@ def crawl_commersant(url_to_start):
                 return {"status": "ok"}
         if not running:
             return {"status": "ok"}
+        assert len(data) > 0
         logging.warning("Dumping into PSQL")
         dump_into_postgresql(data)
     logging.warning("Changing date")
