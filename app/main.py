@@ -1,5 +1,13 @@
+import warnings
 import fastapi
 from app.parser import crawl_commersant
+
+
+def warn(*args, **kwargs):
+    pass
+
+
+warnings.warn = warn
 
 app = fastapi.FastAPI()
 

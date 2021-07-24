@@ -96,43 +96,42 @@ def crawl_commersant(url_to_start):
     logging.warning("Starting crawler....")
     html_page = requests.get(url_to_start)
     running = True
-    while running:
-        soup = BeautifulSoup(html_page.content, 'html.parser')
-        data = []
-        news = soup.find_all("article", class_="archive_result")
-        assert len(news) > 0
-        for item in news:
-            news_type = item.find( "p", class_="archive_result__tag").find("a").text
-            if "лентановостей" not in news_type.lower().replace("\n", "").replace(" ", ""):
-                logging.info("Skipping.....")
-                continue
-            link = "https://www.kommersant.ru" + \
-                item.find("div", class_="archive_result__item_text").find(
-                    "a").get("href")
-            logging.warning(link)
-            if link not in links:
-                links.append(link)
-                content = parse_commersant(link)
-                content["link"] = link
-                data.append(content)
-            else:
-                if len(data) != 0:
-                    assert len(data) > 0
-                    logging.warning("Dumping into PSQL")
-                    dump_into_postgresql(data)
-                logging.warning("Completed parsing")
-                running = False
-                return {"status": "ok"}
-        if not running:
+    soup = BeautifulSoup(html_page.content, 'html.parser')
+    data = []
+    news = soup.find_all("article", class_="archive_result")
+    assert len(news) > 0
+    for item in news:
+        news_type = item.find( "p", class_="archive_result__tag").find("a").text
+        if "лентановостей" not in news_type.lower().replace("\n", "").replace(" ", ""):
+            logging.info("Skipping.....")
+            continue
+        link = "https://www.kommersant.ru" + \
+            item.find("div", class_="archive_result__item_text").find(
+                "a").get("href")
+        logging.warning(link)
+        if link not in links:
+            links.append(link)
+            content = parse_commersant(link)
+            content["link"] = link
+            data.append(content)
+        else:
+            if len(data) != 0:
+                assert len(data) > 0
+                logging.warning("Dumping into PSQL")
+                dump_into_postgresql(data)
+            logging.warning("Completed parsing")
+            running = False
             return {"status": "ok"}
-        if len(data) != 0:
-            assert len(data) > 0
-            logging.warning("Dumping into PSQL")
-            dump_into_postgresql(data)
-        logging.warning("Changing date")
-        change_page = soup.find("a", "archive_date__arrow--prev")
-        html_page = requests.get("https://www.kommersant.ru" + change_page.get("href"))
-        logging.error("Completed")
+    if not running:
+        return {"status": "ok"}
+    if len(data) != 0:
+        assert len(data) > 0
+        logging.warning("Dumping into PSQL")
+        dump_into_postgresql(data)
+    # logging.warning("Changing date")
+    # change_page = soup.find("a", "archive_date__arrow--prev")
+    # html_page = requests.get("https://www.kommersant.ru" + change_page.get("href"))
+    logging.error("Completed")
 
 
 #crawl_commersant(url_to_start)
