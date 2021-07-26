@@ -37,5 +37,5 @@ def makecloud(item: AllNews):
 
     # Generate a word cloud image
     wc = WordCloud(background_color="white", max_words=200,
-                   colormap="gist_heat", mask=mask).generate(text)
+                   colormap="Blues", mask=mask).generate(text)
     wc.to_file(os.environ.get("WORDCLOUDS") + str(item.id)+'.png')
